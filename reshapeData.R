@@ -12,6 +12,6 @@ males <- dcast(befolk[, list(ALDER, Modul, M)], Modul ~ ALDER, value.var = 'M')[
 females <- dcast(befolk[, list(ALDER, Modul, K)], Modul ~ ALDER, value.var = 'K')[, -1]
 total <- dcast(befolk[, list(ALDER, Modul, TOTAL)], Modul ~ ALDER, value.var = 'TOTAL')[, -1]
 
-d <- dist(total)
-hc <- hclust(d, method = "ward.D2")
-plot(hc)
+write.csv(males, file = "males.csv")
+write.csv(females, file = "females.csv")
+write.csv(total, file = "total.csv")
