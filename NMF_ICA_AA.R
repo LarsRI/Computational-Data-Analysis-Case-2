@@ -12,7 +12,7 @@ plot(nmfResult)
 nmfResultRand <- nmf(randomize(t(befolkDat)), rank = 1:10)
 plot(nmfResultRand)
 
-nmfSelected <- nmf(t(befolkDat), rank = 3, seed = "nndsvd")
+nmfSelected <- nmf(befolkDat, rank = 3, seed = "nndsvd")
 fit(nmfSelected)
 summary(nmfSelected)
 # get matrix W
@@ -26,9 +26,38 @@ dim(h)
 extractFeatures(nmfSelected)
 
 ### Archetypical Analysis 
+options("datatable.fread.dec.locale" = "fr_FR.UTF-8")
+dat <- fread("dtu data_final.csv", encoding = "Latin-1", dec = ',')
+
+dat[, RX:=RX - ADHD - Diabetes - Astma]
+dat[, OTC:=OTC - Rygestop]
+dat <- dat[RX > 0, ]
+
+befolkDat <- dat[, list(ADHD, Diabetes, OTC, Branded, Rygestop, Astma, RX)]
+
+befolkDat <- befolkDat / rowSums(befolkDat)
 archTest <- stepArchetypes(befolkDat, k = 1:15, nrep = 5)
 screeplot(archTest)
 
+aa7 <- bestModel(archTest[[7]])
+aa7$archetypes
+save(archTest, aa7, file = "archetypes.RData")
+write.csv(aa7$archetypes, file = "arcehtypes.csv")
+write.csv(aa7$alphas, file = "arcehtypesScores.csv")
+
+d <- dist(aa7$alphas)
+hcl <- hclust(d, method = "ward.D2")
+plot(hcl)
+
+
+ir.pca <- prcomp(befolkDat,
+                 center = TRUE,
+                 scale. = TRUE) 
+biplot(ir.pca)
+ggbiplot(ir.pca)
+
 
 ### ICA
-ica <- icafast(befolkDat, nc = 10)
+ica <- icafast(befolkDat, nc = 2)
+
+

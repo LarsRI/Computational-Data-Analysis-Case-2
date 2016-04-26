@@ -1,4 +1,3 @@
-setwd("~/DTU/Computational Data Analysis/Case 2 - DLi-MI/")
 library(data.table)
 library(archetypes)
 library(reshape2)
