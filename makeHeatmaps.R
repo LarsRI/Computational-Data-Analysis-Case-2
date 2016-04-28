@@ -4,6 +4,7 @@ library(ggdendro)
 library(gridExtra)
 library(grid)
 library(gtable)
+library(data.table)
 
 # Read and format the data
 options("datatable.fread.dec.locale" = "fr_FR.UTF-8")
@@ -150,3 +151,19 @@ pChain <- plotFn(p3)
 grid.newpage()
 grid.draw(pChain)
 ggsave(plot = pChain, filename = "colourByChain.png", width = 30, height = 20, units = 'cm')
+
+
+
+pD <- melt(aa7$archetypes)
+aTypes <- paste("Archetype", 1:7)
+
+pD$Var1 <- factor(rep(aTypes, 7), levels = aTypes[col.ord])
+pD$value <- pD$value * 100
+
+barPlot <- ggplot(pD, aes(x = Var1, fill = Var2, y = value)) + geom_bar(stat = "identity") + 
+    scale_fill_brewer(palette = "Set3", name = "Sale") + 
+    scale_x_discrete(name = element_blank()) +
+    scale_y_discrete(name = "Percentage", expand = c(0,0), limits = seq(0, 100, length.out = 11)) +
+    theme_minimal()
+
+ggsave(barPlot, filename = "archetypes.png", width = 30, height = 20, units = 'cm')
