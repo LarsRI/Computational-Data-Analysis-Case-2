@@ -44,13 +44,14 @@ aa7$archetypes
 save(archTest, aa7, file = "archetypes.RData")
 write.csv(aa7$archetypes, file = "arcehtypes.csv")
 write.csv(aa7$alphas, file = "arcehtypesScores.csv")
+write.csv(befolkDat, file = "befolkDat.csv")
 
 d <- dist(aa7$alphas)
 hcl <- hclust(d, method = "ward.D2")
 plot(hcl)
 
 
-ir.pca <- prcomp(befolkDat,
+ir.pca <- prcomp(aa7$alphas,
                  center = TRUE,
                  scale. = TRUE) 
 biplot(ir.pca)
