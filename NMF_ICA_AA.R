@@ -91,14 +91,3 @@ plot(hcl)
 
 
 
-
-
-
-
-
-
-
-### ICA
-ica <- icafast(befolkDat, nc = 2)
-
-

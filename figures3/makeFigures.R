@@ -6,6 +6,10 @@ library(grid)
 library(gtable)
 library(data.table)
 library(archetypes)
+library(GGally)
+library(CCA)
+library(pls)
+
 setwd("~/DTU/Computational Data Analysis/Case 2 - DLi-MI/")
 
 # Read and format the data
@@ -238,3 +242,36 @@ barPlot7 <- ggplot(dataChain, aes(fill = variable, x = Chain, y = value2)) + geo
 
 ggsave(barPlot6, filename = "chain_1.png", width = 30, height = 20, units = 'cm')
 ggsave(barPlot7, filename = "chain_2.png", width = 30, height = 20, units = 'cm')
+
+
+
+
+befolkDat <- data.table(income = rowSums(dat[, list(OTC, Branded, RX)]))
+befolkDat[, grp:=factor(max.col(coef(aa3)))]
+
+dat[befolkDat$grp != 1, table(Region)]
+dat[befolkDat$grp != 1, table(Chain)]
+dat[befolkDat$grp != 1, table(Habitat)]
+
+fit <- lm(income ~ grp, data = befolkDat)
+
+befolkDat2 <- data.table(income = rowSums(dat[, list(OTC, Branded, RX)]), coef(aa3))
+befolkDat2[, income:=income/max(income)]
+fit2 <- lm(income ~ V1 + V3, data = befolkDat2)
+summary(fit2)
+
+total <- fread("total.csv")
+total <- total[dat$Modul, -1, with = FALSE]
+
+
+pls <- plsr(coef(aa3) ~ as.matrix(total))
+
+xShuf <- apply(as.matrix(total), 2, function(x)x[sample(length(x))])
+plsShuf <- plsr(coef(aa3) ~ xShuf)
+cutOff <- max(explvar(plsShuf))
+
+nComp <- max(which(explvar(pls) > cutOff))
+pls2 <- plsr(coef(aa3) ~ as.matrix(total), ncomp = nComp)
+
+pls2$loadings
+

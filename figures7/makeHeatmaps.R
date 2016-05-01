@@ -20,7 +20,7 @@ dat <- dat[RX > 0, ]
 load("archetypes.RData")
 
 x <- aa7$alphas
-colnames(x) <- paste("Archetype", 1:7)
+colnames(x) <- paste("A", 1:7)
 
 # Get row and col order
 dd.row <- as.dendrogram(hclust(dist(x)))
@@ -157,13 +157,13 @@ ggsave(plot = pChain, filename = "colourByChain.png", width = 30, height = 20, u
 
 
 myTheme <- theme_minimal(base_size = 30) +
-  theme(axis.text.x = element_text(vjust = 0.5, hjust = 1, angle = 90),
+  theme(#axis.text.x = element_text(vjust = 0.5, hjust = 1, angle = 90),
         panel.grid = element_blank(),
         legend.text = element_text(size = 15))
 
 
 pD <- melt(aa7$archetypes)
-aTypes <- paste("Archetype", 1:7)
+aTypes <- paste("A", 1:7)
 
 pD$Var1 <- factor(rep(aTypes, 7), levels = aTypes[col.ord])
 pD$value <- pD$value * 100
@@ -180,7 +180,8 @@ tmp <- data.table(aa7$alphas)
 setnames(tmp, paste("Archetype", 1:7))
 pD2 <- melt(cbind(tmp, dat[, list(Habitat, Region, Chain)]), id.vars = c('Habitat', 'Region', 'Chain'))
 pD2$value <- pD2$value
-
+pD2[, Habitat:=gsub(" ", "\n", Habitat)]
+pD2[, Habitat:=gsub("Metropolomegn", "Metropol-\nomegn", Habitat)]
 
 dataHabitat <- pD2[, list(value = sum(value)), by = c('Habitat', 'variable')]
 dataHabitat[, value2:=(value/sum(value))*100, by = Habitat]
@@ -242,3 +243,23 @@ barPlot7 <- ggplot(dataChain, aes(fill = variable, x = Chain, y = value2)) + geo
 
 ggsave(barPlot6, filename = "chain_1.png", width = 30, height = 20, units = 'cm')
 ggsave(barPlot7, filename = "chain_2.png", width = 30, height = 20, units = 'cm')
+
+
+
+
+
+
+total <- fread("total.csv")
+total <- total[dat$Modul, -1, with = FALSE]
+
+
+pls <- plsr(coef(aa3) ~ as.matrix(total))
+
+xShuf <- apply(as.matrix(total), 2, function(x)x[sample(length(x))])
+plsShuf <- plsr(coef(aa3) ~ xShuf)
+cutOff <- max(explvar(plsShuf))
+
+nComp <- max(which(explvar(pls) > cutOff))
+pls2 <- plsr(coef(aa3) ~ as.matrix(total), ncomp = nComp)
+
+pls2$loadings
