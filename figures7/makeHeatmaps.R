@@ -248,19 +248,62 @@ ggsave(barPlot7, filename = "chain_2.png", width = 30, height = 20, units = 'cm'
 
 
 
+befolkDat <- data.table(income = rowSums(dat[, list(OTC, Branded, RX)]))
+befolkDat[, grp:=factor(max.col(coef(aa7)))]
+befolkDat[, mean(income), by = grp]
 
 
-total <- fread("total.csv")
+
+total <- fread("../total.csv")
 total <- total[dat$Modul, -1, with = FALSE]
 
-
-pls <- plsr(coef(aa3) ~ as.matrix(total))
+pls <- plsr(coef(aa7) ~ as.matrix(total))
 
 xShuf <- apply(as.matrix(total), 2, function(x)x[sample(length(x))])
-plsShuf <- plsr(coef(aa3) ~ xShuf)
+plsShuf <- plsr(coef(aa7) ~ xShuf)
 cutOff <- max(explvar(plsShuf))
 
 nComp <- max(which(explvar(pls) > cutOff))
-pls2 <- plsr(coef(aa3) ~ as.matrix(total), ncomp = nComp)
+pls2 <- plsr(coef(aa7) ~ as.matrix(total), ncomp = nComp)
+
 
 pls2$loadings
+
+pD3 <- data.table(as.matrix(pls2$scores[]))
+setnames(pD3, c("Comp1", "Comp2"))
+pD3[, atype:=factor(max.col(coef(aa7)))]
+pD3 <- cbind(pD3, dat)
+
+
+ggplot(pD3, aes(Comp1, Comp2, colour = atype)) + geom_point(position = position_jitter(width = 500, height = 500)) + scale_color_brewer(palette = "Set2")
+
+
+ggplot(pD3, aes(Comp1, Comp2, colour = Habitat)) + geom_point(position = position_jitter(width = 500, height = 500)) + scale_color_brewer(palette = "Set2")
+ggplot(pD3, aes(Comp1, Comp2, colour = Chain)) + geom_point(position = position_jitter(width = 500, height = 500)) + scale_color_brewer(palette = "Set2")
+pD3[, selected:=ifelse(atype %in% c('3', '4'), 'Yes', 'No')]
+pD3[, shapeD:=selected]
+pD3[atype == '3', shapeD:="t1"]
+pD3[atype == '4', shapeD:="t2"]
+pD3[, atype:=paste("Archetype", atype)]
+
+p1 <- ggplot(pD3, aes(Comp1, Comp2, colour = Region)) + 
+  geom_point(position = position_jitter(width = 1000, height = 1000), size = 3) + 
+  scale_color_brewer(palette = "Set2", name = element_blank()) +
+  theme_bw(base_size = 25) +
+  scale_x_continuous(name = element_blank()) +
+  scale_y_continuous(name = element_blank()) +
+  theme(panel.grid = element_blank(),
+        legend.text = element_text(size = 15))
+
+  
+p2 <- ggplot(pD3[atype %in% c('Archetype 3', 'Archetype 4')], aes(Comp1, Comp2, colour = atype)) + 
+  geom_point(position = position_jitter(width = 500, height = 500), size = 3) + 
+  scale_color_brewer(palette = "Set1", name = element_blank()) +
+  scale_x_continuous(name = element_blank()) +
+  scale_y_continuous(name = element_blank()) +
+  theme_bw(base_size = 25) +
+  theme(panel.grid = element_blank(),
+        legend.text = element_text(size = 15))
+
+ggsave(p1, filename = "pls_1.png", width = 20, height = 20, units = 'cm')
+ggsave(p2, filename = "pls_2.png", width = 20, height = 20, units = 'cm')
