@@ -165,7 +165,7 @@ myTheme <- theme_minimal(base_size = 30) +
 pD <- melt(aa7$archetypes)
 aTypes <- paste("A", 1:7)
 
-pD$Var1 <- factor(rep(aTypes, 7), levels = aTypes[col.ord])
+pD$Var1 <- factor(rep(aTypes, 7))#, levels = aTypes[col.ord])
 pD$value <- pD$value * 100
 
 barPlot <- ggplot(pD, aes(x = Var1, fill = Var2, y = value)) + geom_bar(stat = "identity") + 
@@ -182,6 +182,7 @@ pD2 <- melt(cbind(tmp, dat[, list(Habitat, Region, Chain)]), id.vars = c('Habita
 pD2$value <- pD2$value
 pD2[, Habitat:=gsub(" ", "\n", Habitat)]
 pD2[, Habitat:=gsub("Metropolomegn", "Metropol-\nomegn", Habitat)]
+
 
 dataHabitat <- pD2[, list(value = sum(value)), by = c('Habitat', 'variable')]
 dataHabitat[, value2:=(value/sum(value))*100, by = Habitat]
