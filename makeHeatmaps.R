@@ -175,15 +175,15 @@ pD2 <- melt(cbind(tmp, dat[, list(Habitat, Region, Chain)]), id.vars = c('Habita
 pD2$value <- pD2$value
 
 dataHabitat <- pD2[, list(value = sum(value)), by = c('Habitat', 'variable')]
-dataHabitat[, value2:=(value/sum(value))*100, by = variable]
+dataHabitat[, value2:=(value/sum(value))*100, by = Habitat]
 
-barPlot2 <- ggplot(dataHabitat, aes(x = variable, fill = Habitat, y = value)) + geom_bar(stat = "identity") + 
+barPlot2 <- ggplot(dataHabitat, aes(fill = variable, x = Habitat, y = value)) + geom_bar(stat = "identity") + 
     scale_fill_brewer(palette = "Set3") + 
     scale_x_discrete(name = element_blank()) +
     scale_y_discrete(name = "Observations", expand = c(0,0), limits = seq(0, 130, length.out = 14)) +
     theme_minimal()
 
-barPlot3 <- ggplot(dataHabitat, aes(x = variable, fill = Habitat, y = value2)) + geom_bar(stat = "identity") + 
+barPlot3 <- ggplot(dataHabitat, aes(fill = variable, x = Habitat, y = value2)) + geom_bar(stat = "identity") + 
     scale_fill_brewer(palette = "Set3") + 
     scale_x_discrete(name = element_blank()) +
     scale_y_discrete(name = "Percentage", expand = c(0,0), limits = seq(0, 100, length.out = 11)) +
@@ -196,15 +196,15 @@ ggsave(barPlot3, filename = "habitat_2.png", width = 30, height = 20, units = 'c
 
 
 dataRegion <- pD2[, list(value = sum(value)), by = c('Region', 'variable')]
-dataRegion[, value2:=(value/sum(value))*100, by = variable]
+dataRegion[, value2:=(value/sum(value))*100, by = Region]
 
-barPlot4 <- ggplot(dataRegion, aes(x = variable, fill = Region, y = value)) + geom_bar(stat = "identity") + 
+barPlot4 <- ggplot(dataRegion, aes(fill = variable, x = Region, y = value)) + geom_bar(stat = "identity") + 
     scale_fill_brewer(palette = "Set3") + 
     scale_x_discrete(name = element_blank()) +
     scale_y_discrete(name = "Observations", expand = c(0,0), limits = seq(0, 130, length.out = 14)) +
     theme_minimal()
 
-barPlot5 <- ggplot(dataRegion, aes(x = variable, fill = Region, y = value2)) + geom_bar(stat = "identity") + 
+barPlot5 <- ggplot(dataRegion, aes(fill = variable, x = Region, y = value2)) + geom_bar(stat = "identity") + 
     scale_fill_brewer(palette = "Set3") + 
     scale_x_discrete(name = element_blank()) +
     scale_y_discrete(name = "Percentage", expand = c(0,0), limits = seq(0, 100, length.out = 11)) +
@@ -218,15 +218,15 @@ ggsave(barPlot5, filename = "region_2.png", width = 30, height = 20, units = 'cm
 
 
 dataChain <- pD2[, list(value = sum(value)), by = c('Chain', 'variable')]
-dataChain[, value2:=(value/sum(value))*100, by = variable]
+dataChain[, value2:=(value/sum(value))*100, by = Chain]
 
-barPlot6 <- ggplot(dataChain, aes(x = variable, fill = Chain, y = value)) + geom_bar(stat = "identity") + 
+barPlot6 <- ggplot(dataChain, aes(fill = variable, x = Chain, y = value)) + geom_bar(stat = "identity") + 
     scale_fill_brewer(palette = "Set3") + 
     scale_x_discrete(name = element_blank()) +
     scale_y_discrete(name = "Observations", expand = c(0,0), limits = seq(0, 130, length.out = 14)) +
     theme_minimal()
 
-barPlot7 <- ggplot(dataChain, aes(x = variable, fill = Chain, y = value2)) + geom_bar(stat = "identity") + 
+barPlot7 <- ggplot(dataChain, aes(fill = variable, x = Chain, y = value2)) + geom_bar(stat = "identity") + 
     scale_fill_brewer(palette = "Set3") + 
     scale_x_discrete(name = element_blank()) +
     scale_y_discrete(name = "Percentage", expand = c(0,0), limits = seq(0, 100, length.out = 11)) +
