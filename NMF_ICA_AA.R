@@ -58,6 +58,46 @@ biplot(ir.pca)
 ggbiplot(ir.pca)
 
 
+
+
+
+
+
+### Archetypical Analysis2 
+options("datatable.fread.dec.locale" = "fr_FR.UTF-8")
+dat <- fread("dtu data_final.csv", encoding = "Latin-1", dec = ',')
+
+#dat[, RX:=RX - ADHD - Diabetes - Astma]
+#dat[, OTC:=OTC - Rygestop]
+#dat <- dat[RX > 0, ]
+
+befolkDat <- dat[, list(OTC, Branded, RX)]
+
+befolkDat <- befolkDat / rowSums(befolkDat)
+archTest <- stepArchetypes(befolkDat, k = 3, nrep = 25)
+screeplot(archTest)
+
+aa3 <- bestModel(archTest[[1]])
+aa3$archetypes
+save(archTest, aa3, file = "archetypes3.RData")
+write.csv(aa3$archetypes, file = "arcehtypes2.csv")
+write.csv(aa3$alphas, file = "arcehtypesScores2.csv")
+write.csv(befolkDat, file = "befolkDat2.csv")
+
+d <- dist(aa3$alphas)
+hcl <- hclust(d, method = "ward.D2")
+plot(hcl)
+
+
+
+
+
+
+
+
+
+
+
 ### ICA
 ica <- icafast(befolkDat, nc = 2)
 
